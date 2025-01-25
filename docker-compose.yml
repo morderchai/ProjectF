@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  webapplication4:
+    image: ${DOCKER_REGISTRY-}webapplication4
+    build:
+      context: .
+      dockerfile: WebApplication4/Dockerfile
+      target: migrations
+    environment:
+      - USER_SECRETS_ID=a933e274-f1d6-45d6-8484-fd398900449e
+      - CONN_STRING=User ID=postgres;Password=postgres;Host=database;Port=5432;Database=postgres;Pooling=true;
+    depends_on:
+      - database
+  database:
+      image: postgres:latest
+      environment:
+        - POSTGRES_PASSWORD=postgres
+      ports:
+      - 5432:5432
+  rabbitmq:
+      image: rabbitmq:3-management
+      container_name: rabbitmq
+      ports:
+      - "5672:5672"
+      - "15672:15672"
