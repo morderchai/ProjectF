@@ -7,10 +7,6 @@ EXPOSE 8080
 EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-RUN dotnet tool install --global dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"
-WORKDIR /src
-ENTRYPOINT dotnet-ef database update --project src/DB/DB.csproj --startup-project src/WebApplication4/
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["WebApplication4/WebApplication4.csproj", "WebApplication4/"]
