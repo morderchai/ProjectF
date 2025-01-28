@@ -1,6 +1,6 @@
 ﻿namespace DB.DbModels
 {
-    public class BaseDbModel 
+    public class BaseEntity 
     {
         public Guid Id { get; set; }
     }

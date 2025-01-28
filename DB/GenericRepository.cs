@@ -1,10 +1,11 @@
 ﻿
 using DB.DbModels;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DB
 {
-    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : BaseDbModel
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : BaseEntity
     {
         public AppDbContext _context;
         public DbSet<TEntity> _dbSet;
@@ -15,34 +16,51 @@ namespace DB
             _dbSet = context.Set<TEntity>();
         }
 
-        public Task AddAsync(TEntity item)
+        public async Task AddAsync(TEntity entity)
+        {
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> CountAllAsync()
+        {
+            return await _dbSet.CountAsync();
+        }
+
+        public async Task<int> CountWhereAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbSet.CountAsync(predicate);
+        }
+
+        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteAsync(TEntity item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IList<TEntity>> GetAllAsync()
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<TEntity> GetAsync(int id)
+        public async Task<TEntity> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public Task UpdateAsync(TEntity item)
+        public async Task<IEnumerable<TEntity>> GetWhereAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
+
+        public async Task RemoveAsync(TEntity entity)
+        {
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(TEntity entity)
+        {
+            _dbSet.Update(entity);
         }
     }
 }

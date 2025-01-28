@@ -1,14 +1,18 @@
 ﻿using DB.DbModels;
+using System.Linq.Expressions;
 
 namespace DB
 {
-    public interface IGenericRepository<T> where T : BaseDbModel
+    public interface IGenericRepository<T> where T : BaseEntity
     {
-        public Task<IList<T>> GetAllAsync();
-        public Task AddAsync(T item);
-        public Task UpdateAsync(T item);
-        public Task DeleteAsync(T item);
-        public Task DeleteAllAsync();
-        public Task<T> GetAsync(int id);
+        Task<T> GetByIdAsync(int id);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task AddAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task RemoveAsync(T entity);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetWhereAsync(Expression<Func<T, bool>> predicate);
+        Task<int> CountAllAsync();
+        Task<int> CountWhereAsync(Expression<Func<T, bool>> predicate);
     }
 }
