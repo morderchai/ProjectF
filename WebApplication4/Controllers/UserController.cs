@@ -25,7 +25,7 @@ namespace WebApplication4.Controllers
         [Route($"{nameof(GetUserByName)}")]
         public async Task<User> GetUserByName(string name)
         {
-            return (await _userRepository.GetWhereAsync(x => x.Name == name)).FirstOrDefault();
+            return (await _userRepository.GetWhereAsync(x => x.Username == name)).FirstOrDefault();
         }
 
         [HttpGet]

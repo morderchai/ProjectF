@@ -2,6 +2,7 @@
 {
     public interface IMessageService
     {
-        bool Enqueue(string message);
+        Task<bool> SendAsync(string message, Guid channelId);
+        Task<IEnumerable<string>> ReceiveFromChannel(Guid channelId);
     }
 }

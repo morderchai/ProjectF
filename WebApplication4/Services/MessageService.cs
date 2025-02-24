@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System.Text;
 using System.Threading.Channels;
 
@@ -6,30 +7,50 @@ namespace WebApplication3.Services
 {
     public class MessageService : IMessageService
     {
-        //ConnectionFactory _factory;
-        //IConnection _conn;
-        //IModel _channel;
-        //public MessageService()
-        //{
-        //    Console.WriteLine("about to connect to rabbit");
+        private readonly ConnectionFactory _factory;
 
-        //    _factory = new ConnectionFactory() { HostName = "localhost", Port=5672};
-        //    _factory.UserName = "guest";
-        //    _factory.Password = "guest";
-        //    _conn = _factory.CreateConnection();
-        //    _channel = _conn.CreateModel();
-        //    _channel.QueueDeclare("hello", true, false, false, null);
-        //    _channel.BasicQos(0, 1, false);
-        //}
-
-        public bool Enqueue(string messageString)
+        public MessageService()
         {
-            //var body = Encoding.UTF8.GetBytes(messageString);
-            //var properties = _channel.CreateBasicProperties();
-            //properties.Persistent = true;
-            //_channel.BasicPublish("", "hello", null, body);
-            //Console.WriteLine(" [x] Published {0} to RabbitMQ", messageString);
+            Console.WriteLine("about to connect to rabbit");
+
+            _factory = new ConnectionFactory() { HostName = "rabbitmq", Port = 5672, UserName  =  "guest",  Password    =  "guest" };
+            _factory.UserName = "guest";
+            _factory.Password = "guest";
+        }
+
+        public async Task<bool> SendAsync(string messageString, Guid channelId)
+        {
+            using var connection = await _factory.CreateConnectionAsync();
+            using var channel = await connection.CreateChannelAsync();
+
+            var body = Encoding.UTF8.GetBytes(messageString);
+            await channel.QueueDeclareAsync(channelId.ToString(), false, false, false, null);
+            await channel.BasicPublishAsync(exchange: "", routingKey: "hello", body: body);
+            Console.WriteLine(" [x] Published {0} to RabbitMQ", messageString);
             return true;
+        }
+
+        public async Task<IEnumerable<string>> ReceiveFromChannel(Guid channelId)
+        {
+            using var connection = await _factory.CreateConnectionAsync();
+            using var channel = await connection.CreateChannelAsync();
+
+            await channel.QueueDeclareAsync(channelId.ToString(), durable: false, exclusive: false, autoDelete: false,
+                arguments: null);
+
+            Console.WriteLine(" [*] Waiting for messages.");
+
+            var consumer = new AsyncEventingBasicConsumer(channel);
+            consumer.ReceivedAsync += (model, ea) =>
+            {
+                var body = ea.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                Console.WriteLine($" [x] Received {message}");
+                return Task.CompletedTask;
+            };
+
+            await channel.BasicConsumeAsync(channelId.ToString(), autoAck: true, consumer: consumer);
+            return new List<string>();
         }
     }
 }
