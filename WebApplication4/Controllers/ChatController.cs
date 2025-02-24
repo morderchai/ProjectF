@@ -20,9 +20,20 @@ namespace WebApplication4.Controllers
         public async Task SendMessage(string message, Guid channel)
         {
             _logger.LogInformation(message, channel);
+
+            await _messaging.Initialization;
             await _messaging.SendAsync(message, channel);
 
-            await _messaging.ReceiveFromChannel(channel); 
+            await _messaging.ReceiveFromChannel(channel);
+        }
+
+
+        [HttpGet]
+
+        [Route($"{nameof(guid)}")]
+        public string guid()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 }

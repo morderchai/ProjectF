@@ -9,23 +9,25 @@ namespace WebApplication3.Services
     {
         private readonly ConnectionFactory _factory;
 
+        private IConnection? _connection;
+        private IChannel _channel;
+
+        public Task Initialization { get; private set; }
+
         public MessageService()
         {
             Console.WriteLine("about to connect to rabbit");
 
-            _factory = new ConnectionFactory() { HostName = "rabbitmq", Port = 5672, UserName  =  "guest",  Password    =  "guest" };
-            _factory.UserName = "guest";
-            _factory.Password = "guest";
+            _factory = new ConnectionFactory() { HostName = "rabbitmq", Port = 5672, UserName = "guest", Password = "guest" };
+
+            Initialization = InitializeAsync();
         }
 
         public async Task<bool> SendAsync(string messageString, Guid channelId)
         {
-            using var connection = await _factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
-
             var body = Encoding.UTF8.GetBytes(messageString);
-            await channel.QueueDeclareAsync(channelId.ToString(), false, false, false, null);
-            await channel.BasicPublishAsync(exchange: "", routingKey: "hello", body: body);
+            await _channel.QueueDeclareAsync(channelId.ToString(), true, false, false, null);
+            await _channel.BasicPublishAsync(exchange: "", routingKey: channelId.ToString(), body: body);
             Console.WriteLine(" [x] Published {0} to RabbitMQ", messageString);
             return true;
         }
@@ -33,14 +35,13 @@ namespace WebApplication3.Services
         public async Task<IEnumerable<string>> ReceiveFromChannel(Guid channelId)
         {
             using var connection = await _factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
 
-            await channel.QueueDeclareAsync(channelId.ToString(), durable: false, exclusive: false, autoDelete: false,
+            await _channel.QueueDeclareAsync(channelId.ToString(), true, exclusive: false, autoDelete: false,
                 arguments: null);
 
             Console.WriteLine(" [*] Waiting for messages.");
 
-            var consumer = new AsyncEventingBasicConsumer(channel);
+            var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += (model, ea) =>
             {
                 var body = ea.Body.ToArray();
@@ -49,8 +50,14 @@ namespace WebApplication3.Services
                 return Task.CompletedTask;
             };
 
-            await channel.BasicConsumeAsync(channelId.ToString(), autoAck: true, consumer: consumer);
+            await _channel.BasicConsumeAsync(channelId.ToString(), autoAck: true, consumer: consumer);
             return new List<string>();
+        }
+
+        private async Task InitializeAsync()
+        {
+            _connection = await _factory.CreateConnectionAsync();
+            _channel = await _connection.CreateChannelAsync();
         }
     }
 }
