@@ -23,10 +23,16 @@ namespace WebApplication4.Controllers
 
             await _messaging.Initialization;
             await _messaging.SendAsync(message, channel);
+        }
+
+        [HttpGet]
+        [Route($"{nameof(ReceiveFromChannel)}")]
+        public async Task ReceiveFromChannel(Guid channel)
+        {
+            await _messaging.Initialization;
 
             await _messaging.ReceiveFromChannel(channel);
         }
-
 
         [HttpGet]
 

@@ -35,6 +35,7 @@ namespace WebApplication3.Services
         public async Task<IEnumerable<string>> ReceiveFromChannel(Guid channelId)
         {
             using var connection = await _factory.CreateConnectionAsync();
+            var  messages = new List<string>();
 
             await _channel.QueueDeclareAsync(channelId.ToString(), true, exclusive: false, autoDelete: false,
                 arguments: null);
@@ -47,11 +48,12 @@ namespace WebApplication3.Services
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine($" [x] Received {message}");
+                messages.Add(message);
                 return Task.CompletedTask;
             };
 
             await _channel.BasicConsumeAsync(channelId.ToString(), autoAck: true, consumer: consumer);
-            return new List<string>();
+            return messages;
         }
 
         private async Task InitializeAsync()
