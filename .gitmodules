@@ -1,0 +1,6 @@
+[submodule "Common"]
+	path = Common
+	url = https://github.com/morderchai/Threadia-Common
+[submodule "DB"]
+	path = DB
+	url = https://github.com/morderchai/Threadia-DB
