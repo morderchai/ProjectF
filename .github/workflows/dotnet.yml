@@ -22,10 +22,10 @@ jobs:
         dotnet-version: '8.0.x'  # lub nowsza, jeśli projekt używa 6/7
 
     - name: Restore dependencies
-      run: dotnet restore ProjectF.sln
+      run: dotnet restore WebApplication4.sln.sln
 
     - name: Build
-      run: dotnet build ProjectF.sln --no-restore
+      run: dotnet build WebApplication4.sln.sln --no-restore
 
     - name: Test
-      run: dotnet test ProjectF.sln --no-build --verbosity normal
+      run: dotnet test WebApplication4.sln.sln --no-build --verbosity normal
