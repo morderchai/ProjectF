@@ -14,18 +14,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo z submodułami
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+    - uses: actions/checkout@v3
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x' # dopasuj do wersji, którą używasz
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'  # lub nowsza, jeśli projekt używa 6/7
 
-      - name: Restore dependencies
-        run: dotnet restore
+    - name: Restore dependencies
+      run: dotnet restore ProjectF.sln
 
-      - name: Build
-        run: dotnet build --no-restore
+    - name: Build
+      run: dotnet build ProjectF.sln --no-restore
+
+    - name: Test
+      run: dotnet test ProjectF.sln --no-build --verbosity normal
