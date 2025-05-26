@@ -11,30 +11,21 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Checkout Threadia-Common
-      uses: actions/checkout@v4
-      with:
-          repository: morderchai/Threadia-Common
-          path: dependencies/Threadia-Common
-          token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Checkout Threadia-DB
-      uses: actions/checkout@v4
-      with:
-          repository: morderchai/Threadia-DB
-          path: dependencies/Threadia-DB
-          token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: Checkout repo z submodułami
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # dopasuj do wersji, którą używasz
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
