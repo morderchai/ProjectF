@@ -10,6 +10,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["WebApplication4/WebApplication4.csproj", "WebApplication4/"]
+COPY ["WebApplication4/nuget.config", "."]
 COPY ["DB/DB.csproj", "DB/"]
 COPY ["Common/Common.csproj", "Common/"]													
 RUN dotnet restore "./WebApplication4/WebApplication4.csproj"
