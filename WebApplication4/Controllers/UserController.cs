@@ -1,6 +1,7 @@
-﻿using DB;
-using DB.DbEntities;
+﻿using PostService.DbEntities;
 using Microsoft.AspNetCore.Mvc;
+using UserService.DbEntities;
+using UserService;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

@@ -10,7 +10,6 @@
     <DockerServiceName>webapplication4</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="DbSchemas\init.sql" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
