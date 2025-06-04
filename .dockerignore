@@ -2,10 +2,11 @@
 .vscode/
 .vs/
 *.user
+*.suo
 
 # Build
-bin/
-obj/
+**/bin/
+**/obj/
 *.dll
 *.pdb
 
