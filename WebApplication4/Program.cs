@@ -1,5 +1,3 @@
-using DB;
-using Microsoft.EntityFrameworkCore;
 using WebApplication3.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,13 +10,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IMessageService, MessageService>();
 //builder.Services.AddScoped<AppDbContext>();
-builder.Services.AddDbContextFactory<AppDbContext>(o => o.UseNpgsql(Environment.GetEnvironmentVariable("CONN_STRING")));
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+//builder.Services.AddDbContextFactory<AppDbContext>(o => o.UseNpgsql(Environment.GetEnvironmentVariable("CONN_STRING")));
+//builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 var app = builder.Build();
 
 // Seedowanie danych
-await DbSeeder.SeedAsync(app.Services);
+await UserService.DbSeeder.SeedAsync(app.Services);
+await PostService.DbSeeder.SeedAsync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

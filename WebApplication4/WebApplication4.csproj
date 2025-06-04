@@ -18,11 +18,12 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
     <PackageReference Include="RabbitMQ.Client" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
-    <PackageReference Include="Threadia.Common" Version="1.0.6" />
+    <PackageReference Include="Threadia.Common" Version="1.0.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DB\UserLib.csproj" />
+    <ProjectReference Include="..\PostService\PostService.csproj" />
+    <ProjectReference Include="..\UserService\UserService.csproj" />
   </ItemGroup>
 
 </Project>
